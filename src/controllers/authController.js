@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-let refreshToken = [];
+let refeshTokens = [];
 
 const authController = {
     signupUser: async(req, res) => {
@@ -53,9 +53,87 @@ const authController = {
             return res.status(500).json(err);
         }
     },
-    loginUser: async(req, res) => {
 
-    }
+    //ACCESSTOKEN
+    generateAccessToken: (user) => {
+        return jwt.sign({
+            id: user.id,
+            admin: user.isAdmin,
+        }, process.env.ACCESS_KEY, { expiresIn: '3h' })
+    },
+    //Refesh Token
+    generateRefeshToken: (user) => {
+        return jwt.sign({
+            id: user.id,
+            admin: user.isAdmin,
+        }, process.env.REFRESH_KEY, { expiresIn: '365d' });
+    },
+
+    //Login
+    loginUser: async(req, res) => {
+        try {
+            const user = await User.findOne({
+                phone: req.body.phone
+            });
+            if (!user) {
+                res.status(401).json({ message: 'Phone or Password is incorrect !' })
+            }
+            const validPassword = await bcrypt.compare(
+                req.body.password,
+                user.password
+            );
+            if (!validPassword) {
+                res.status(401).json({ message: 'Invalid phone or Password' })
+            }
+            if (user && validPassword) {
+
+                const token = authController.generateAccessToken(user);
+                const refeshToken = authController.generateRefeshToken(user)
+                refeshTokens.push(refeshToken);
+                //Luu cookie
+                res.cookie("refeshToken", refeshToken, {
+                    httpOnly: true,
+                    //secure: false,
+                    path: '/',
+                    sameSite: 'strict',
+                });
+                const { password, ...other } = user._doc;
+                res.status(200).json({...other, token })
+            }
+        } catch (err) {
+            console.log(err)
+            res.status(500).json(err)
+        }
+    },
+    //RequestToken
+    requestRefeshToken: async(req, res) => {
+        //Take refesh token from user
+        const refeshToken = req.cookies.refeshToken;
+        if (!refeshToken)
+            return res.status(401).json({ message: 'You are not authenticated !' });
+        if (!refeshTokens.includes(refeshToken)) {
+            return res.status(403).json("Refesh Token is not valid !")
+        }
+        jwt.verify(refeshToken, process.env.REFESH_KEY, (err, user) => {
+            if (err) {
+                console.log(err)
+            }
+            refeshTokens = refeshTokens.filter((token) => token !== refeshToken)
+                //create new access and refesh token
+            const newAccessToken = authController.generateAccessToken(user);
+            const newrefeshToken = authController.generateRefeshToken(user);
+
+            refeshTokens.push(newrefeshToken);
+            res.cookie("refeshToken", newrefeshToken, {
+                httpOnly: true,
+                //secure: false,
+                path: '/',
+                sameSite: 'strict',
+            });
+            res.status(200).json({ token: newAccessToken })
+        })
+
+    },
 };
 
 module.exports = authController;
