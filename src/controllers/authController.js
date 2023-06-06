@@ -40,7 +40,7 @@ const authController = {
                 return res.status(400).json({ message: 'User already Existing !' });
             }
 
-            const newUser = await new User({
+            const newUser = new User({
                 name: name,
                 phone: phoneNumber,
                 password: hashed,
@@ -53,6 +53,9 @@ const authController = {
             return res.status(500).json(err);
         }
     },
+    loginUser: async(req, res) => {
+
+    }
 };
 
 module.exports = authController;
