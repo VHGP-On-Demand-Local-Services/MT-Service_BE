@@ -9,7 +9,6 @@ const authController = {
         try {
             const salt = await bcrypt.genSalt(10);
             const hashed = await bcrypt.hash(req.body.password, salt);
-
             // Check validate
             function validateName(name) {
                 const re = /^[a-zA-Z ]*$/;
@@ -134,6 +133,11 @@ const authController = {
         })
 
     },
+    userLogout: async(req, res) => {
+        res.clearCookie('refeshToken')
+        refeshTokens = refeshTokens.filter((token) => token !== req.cookies.refeshToken)
+        res.status(200).json({ message: 'Logout Successfully !' })
+    }
 };
 
 module.exports = authController;
