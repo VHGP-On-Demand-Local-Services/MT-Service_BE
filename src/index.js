@@ -9,8 +9,8 @@ const app = express()
 
 //Import Router
 const authRoute = require('./routes/authRoutes');
-
-//DB Connect
+const userRoute = require('./routes/userRoutes')
+    //DB Connect
 mongoose.connect(process.env.MONGODB_URL)
     .then(() => {
         console.log('Connect DB Successfully !!')
@@ -25,6 +25,7 @@ app.use(express.json());
 
 //Route Path
 app.use('/api/v1/auth', authRoute)
+app.use('/api/v1/users', userRoute)
 
 app.listen(8080, () => {
     console.log('Server Running ......!')
