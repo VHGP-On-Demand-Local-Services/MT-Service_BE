@@ -75,14 +75,14 @@ const authController = {
                 phone: req.body.phone
             });
             if (!user) {
-                res.status(401).json({ message: 'Phone or Password is incorrect !' })
+                return res.status(401).json({ message: 'Phone or Password is incorrect !' })
             }
-            const validPassword = await bcrypt.compare(
+            const validPassword = bcrypt.compare(
                 req.body.password,
                 user.password
             );
             if (!validPassword) {
-                res.status(401).json({ message: 'Invalid phone or Password' })
+                return res.status(401).json({ message: 'Invalid phone or Password' })
             }
             if (user && validPassword) {
 
@@ -101,7 +101,7 @@ const authController = {
             }
         } catch (err) {
             console.log(err)
-            res.status(500).json(err)
+            res.status(500).json({ message: 'Server Error !' })
         }
     },
     //RequestToken
