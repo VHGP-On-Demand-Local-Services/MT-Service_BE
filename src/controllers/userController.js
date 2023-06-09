@@ -1,5 +1,5 @@
 const User = require("../models/User")
-
+const bcrypt = require('bcrypt')
 const userController = {
     getAllUser: async(req, res) => {
         try {
@@ -70,9 +70,56 @@ const userController = {
             console.log(err);
             res.status(500).json({ message: 'Server Error' });
         }
+    },
+    changePass: async(req, res) => {
+        try {
+            const { oldPassword, newPassword, confirmPassword } = req.body;
+            const userId = req.params.id;
+
+            const user = await User.findById(userId);
+
+            if (!user) {
+                return res.status(401).json({ message: 'User does not exist!' });
+            }
+
+            const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
+            if (!isOldPasswordValid) {
+                return res.status(401).json({ message: 'Invalid old password!' });
+            }
+            if (oldPassword === newPassword) {
+                return res.status(401).json({ message: 'The new password cannot be the same as the old password. Retry!' });
+            }
+            if (newPassword !== confirmPassword) {
+                return res.status(400).json({ message: "New password and confirm password don't match!" });
+            }
+
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+            const updatedUser = await User.findByIdAndUpdate(userId, { password: hashedPassword });
+
+            if (updatedUser) {
+                const updatedUserInfo = await User.findById(userId);
+                return res.status(200).json({ message: 'Password changed successfully', user: updatedUserInfo });
+            } else {
+                return res.status(401).json({ message: 'User does not exist!' });
+            }
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json({ message: 'Server Error' });
+        }
+    },
+    deleteUser: async(req, res) => {
+        try {
+            const user = await User.findByIdAndDelete(req.params.id)
+            if (user) {
+                return res.status(200).json({ message: 'Delete Successfully !!' })
+            } else {
+                return res.status(401).json({ message: 'User does not exist !!' })
+            }
+        } catch (err) {
+            res.status(500).json({ message: 'Server Error !' })
+        }
     }
-
-
-
 }
 module.exports = userController;

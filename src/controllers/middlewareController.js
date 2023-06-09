@@ -18,10 +18,10 @@ const middlewareController = {
     },
     verifyTokenUser: (req, res, next) => {
         middlewareController.verifyToken(req, res, () => {
-            if (req.user.id = req.params.id) {
+            if (req.user.id == req.params.id) {
                 next();
             } else {
-                res.status(403).json({ message: 'You are not allowed to update other !' })
+                res.status(403).json({ message: 'You can not perform this function !' })
             }
         })
     },
@@ -39,7 +39,7 @@ const middlewareController = {
             if (req.user.id == req.params.id || req.user.admin) {
                 next();
             } else {
-                res.status(403).json({ message: 'You are not allowed to delete other !' })
+                res.status(403).json({ message: 'You can not perform this function !' })
             }
         })
     },
