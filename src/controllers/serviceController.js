@@ -99,6 +99,18 @@ const serviceController = {
         } catch (err) {
             res.status(500).json({ message: 'Server Error !' })
         }
+    },
+    deleteService: async(req, res) => {
+        try {
+            const service = await Service.findByIdAndDelete(req.params.id)
+            if (service) {
+                return res.status(200).json({ message: 'Delete Successfully !' })
+            } else {
+                return res.status(401).json({ message: 'Service does not exists !' })
+            }
+        } catch (err) {
+            res.status(500).json({ message: 'Server Error !' })
+        }
     }
 };
 
