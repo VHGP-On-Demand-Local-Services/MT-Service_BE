@@ -38,6 +38,13 @@ const serviceController = {
         } catch (err) {
             res.status(500).json({ message: 'Server Error!' });
         }
+    },
+    getAllService: async(req, res) => {
+        try {
+
+        } catch (error) {
+
+        }
     }
 };
 
