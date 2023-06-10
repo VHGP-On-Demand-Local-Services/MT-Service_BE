@@ -41,9 +41,22 @@ const serviceController = {
     },
     getAllService: async(req, res) => {
         try {
-
-        } catch (error) {
-
+            const services = await Service.find()
+            res.status(200).json(services)
+        } catch (err) {
+            res.status(500).json({ message: 'Server Error !' })
+        }
+    },
+    getServicebyId: async(req, res) => {
+        try {
+            const service = await Service.findById(req.params.id);
+            if (service) {
+                return res.status(200).json(service)
+            } else {
+                return res.status(400).json({ message: 'Service does not Exist !' })
+            }
+        } catch (err) {
+            res.status(500).json({ message: 'Server Error !' })
         }
     }
 };

@@ -4,6 +4,6 @@ const serviceController = require('../controllers/serviceController')
 const router = require('express').Router()
 
 router.post('/create-service', middlewareController.verifyTokenAdminFunction, serviceController.createService)
-
-
+router.get('/', middlewareController.verifyToken, serviceController.getAllService)
+router.get('/:id', middlewareController.verifyToken, serviceController.getServicebyId)
 module.exports = router;
