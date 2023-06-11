@@ -3,10 +3,35 @@ const bcrypt = require('bcrypt')
 const userController = {
     getAllUser: async(req, res) => {
         try {
-            const user = await User.find()
-            res.status(200).json(user)
+            const page = parseInt(req.query.page) || 1
+            const limit = parseInt(req.query.limit) || 10
+
+            const startIndex = (page - 1) * limit
+            const endIndex = page * limit
+
+            const users = await User.find().skip(startIndex).limit(limit);
+            const totalUser = await User.countDocuments()
+
+            const pagination = {}
+
+            if (endIndex < totalUser) {
+                pagination.next = {
+                    page: page + 1,
+                    limit: limit
+                };
+            }
+            if (startIndex > 0) {
+                pagination.prev = {
+                    page: page - 1,
+                    limit: limit
+                };
+            }
+            res.status(200).json({
+                pagination,
+                users
+            });
         } catch (err) {
-            res.status(200).json({ message: 'Server Error !' })
+            res.status(500).json({ message: 'Server Error !' })
         }
     },
     getUser: async(req, res) => {
