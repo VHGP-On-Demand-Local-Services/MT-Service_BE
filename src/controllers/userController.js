@@ -43,7 +43,28 @@ const userController = {
                 res.status(401).json({ message: 'User does not exist !' })
             }
         } catch (err) {
-            res.status(200).json({ message: 'Server Error!' })
+            console.log(err)
+            res.status(500).json({ message: 'Server Error!' })
+        }
+    },
+    searchUser: async(req, res) => {
+        try {
+            const keyword = req.query;
+
+            const apartmentRegex = new RegExp(keyword, "i");
+            const phoneRegex = new RegExp(keyword, "i");
+
+            const users = await User.find({
+                $or: [
+                    { phone: phoneRegex },
+                    { apartment: apartmentRegex },
+                ],
+            });
+
+            res.status(200).json({ users });
+        } catch (err) {
+            console.log(err);
+            res.status(500).json({ message: 'Server Error!' });
         }
     },
     updateInforUser: async(req, res) => {

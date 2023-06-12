@@ -41,9 +41,35 @@ const serviceController = {
     },
     getAllService: async(req, res) => {
         try {
-            const services = await Service.find()
-            res.status(200).json(services)
+            const page = parseInt(req.query.page) || 1
+            const limit = parseInt(req.query.limit) || 6
+
+            const startIndex = (page - 1) * limit
+            const endIndex = page * limit
+
+            const services = await Service.find().skip(startIndex).limit(limit)
+            const totalService = await Service.countDocuments()
+
+            const pagination = {}
+
+            if (endIndex < totalService) {
+                pagination.next = {
+                    page: page + 1,
+                    limit: limit
+                }
+            }
+            if (startIndex > 0) {
+                page.prev = {
+                    page: page - 1,
+                    limit: limit
+                }
+            }
+            res.status(200).json({
+                pagination,
+                services
+            })
         } catch (err) {
+            console.log(err)
             res.status(500).json({ message: 'Server Error !' })
         }
     },
