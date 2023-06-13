@@ -8,7 +8,10 @@ const booking_itemSchema = new mongoose.Schema({
     service: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Service'
-    }
+    },
+    status_duff: {
+        type: String
+    },
 }, { timestamps: true });
 
 booking_itemSchema.virtual('id').get(function() {
