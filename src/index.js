@@ -11,6 +11,7 @@ const app = express()
 const authRoute = require('./routes/authRoutes');
 const userRoute = require('./routes/userRoutes')
 const serviceRoute = require('./routes/serviceRoutes')
+const bookingRoute = require('./routes/bookingRoutes')
     //DB Connect
 mongoose.connect(process.env.MONGODB_URL)
     .then(() => {
@@ -28,7 +29,7 @@ app.use(express.json());
 app.use('/api/v1/auth', authRoute)
 app.use('/api/v1/users', userRoute)
 app.use('/api/v1/services', serviceRoute)
-
+app.use('/api/v1/booking', bookingRoute)
 
 app.listen(8080, () => {
     console.log('Server Running ......!')
