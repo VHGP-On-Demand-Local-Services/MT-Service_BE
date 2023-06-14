@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const XRegExp = require('xregexp');
 
 let refeshTokens = [];
 
@@ -11,32 +12,32 @@ const authController = {
             const hashed = await bcrypt.hash(req.body.password, salt);
             // Check validate
             function validateName(name) {
-                const re = /^[a-zA-Z ]*$/;
+                const re = XRegExp('[\\p{L} ]*');
                 return re.test(name);
             }
 
             const name = req.body.name;
             if (!validateName(name)) {
-                return res.status(400).json({ message: 'Name not Valid !' });
+                return res.status(400).json({ message: 'Tên của bạn không hợp lệ!' });
             }
 
             const phoneNumber = req.body.phone;
             if (!/^\d+$/.test(phoneNumber)) {
-                return res.status(400).json({ message: 'Phone number can only contain numbers' });
+                return res.status(400).json({ message: 'Số điện thoại phải là số !' });
             }
             if (req.body.phone.length > 11 || req.body.phone.length < 10) {
-                return res.status(400).json({ message: 'Phone Invalid!! (10 number)' });
+                return res.status(400).json({ message: 'Số điện thoại không hợp lệ!! (10-11 số)' });
             }
             // Check empty
             const apartment = req.body.apartment
             if (!name || !phoneNumber || !req.body.password || !apartment) {
-                return res.status(400).json({ message: 'Please provide all required information' });
+                return res.status(400).json({ message: 'Hãy nhập đủ thông tin các trường bắt buộc !' });
             }
 
             // Check Existing User
             const existingUser = await User.findOne({ phone: req.body.phone });
             if (existingUser) {
-                return res.status(400).json({ message: 'User already Existing !' });
+                return res.status(400).json({ message: 'Số điện thoại đăng ký đã tồn tại !' });
             }
 
             const newUser = new User({
@@ -49,7 +50,7 @@ const authController = {
             res.status(200).json(user);
         } catch (err) {
             console.log(err)
-            return res.status(500).json(err);
+            return res.status(500).json({ message: 'Lỗi Hệ Thống, vui lòng cập nhật ứng dụng!' });
         }
     },
 
@@ -75,14 +76,14 @@ const authController = {
                 phone: req.body.phone
             });
             if (!user) {
-                res.status(401).json({ message: 'Phone or Password is incorrect !' })
+                res.status(401).json({ message: 'Số điện thoại hoặc mật khẩu không đúng !' })
             }
             const validPassword = await bcrypt.compare(
                 req.body.password,
                 user.password
             );
             if (!validPassword) {
-                res.status(401).json({ message: 'Invalid phone or Password' })
+                res.status(401).json({ message: 'Số điện thoại hoặc mật khẩu không hợp lệ !' })
             }
             if (user && validPassword) {
 
@@ -136,7 +137,7 @@ const authController = {
     userLogout: async(req, res) => {
         res.clearCookie('refeshToken')
         refeshTokens = refeshTokens.filter((token) => token !== req.cookies.refeshToken)
-        res.status(200).json({ message: 'Logout Successfully !' })
+        res.status(200).json({ message: 'Đăng Xuất Thành Công !' })
     }
 };
 
