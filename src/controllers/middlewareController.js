@@ -7,13 +7,13 @@ const middlewareController = {
             const accessToken = token.split(" ")[1];
             jwt.verify(accessToken, process.env.ACCESS_KEY, (err, user) => {
                 if (err) {
-                    res.status(403).json({ message: 'Token is not valid !' })
+                    res.status(403).json({ message: 'Mã Xác Thực Không Hợp Lệ !' })
                 }
                 req.user = user;
                 next();
             })
         } else {
-            res.status(401).json({ message: "You are not authenticatied !" })
+            res.status(401).json({ message: "Bạn phải đăng nhập để tiếp tục !" })
         }
     },
     verifyTokenUser: (req, res, next) => {
@@ -21,7 +21,7 @@ const middlewareController = {
             if (req.user.id == req.params.id) {
                 next();
             } else {
-                res.status(403).json({ message: 'You can not perform this function !' })
+                res.status(403).json({ message: 'Bạn Không Thể Thực Hiện Chức Năng Này !' })
             }
         })
     },
@@ -30,7 +30,7 @@ const middlewareController = {
             if (req.user.admin) {
                 next()
             } else {
-                res.status(403).json({ message: 'You can not perform this function !' })
+                res.status(403).json({ message: 'Bạn Không Thể Thực Hiện Chức Năng Này !' })
             }
         })
     },
@@ -39,7 +39,7 @@ const middlewareController = {
             if (req.user.id == req.params.id || req.user.admin) {
                 next();
             } else {
-                res.status(403).json({ message: 'You can not perform this function !' })
+                res.status(403).json({ message: 'Bạn Không Thể Thực Hiện Chức Năng Này !' })
             }
         })
     },
