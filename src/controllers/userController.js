@@ -74,7 +74,7 @@ const userController = {
             const { name, apartment, phone } = req.body;
 
             function validateName(name) {
-                const re = XRegExp('[\\p{L} ]*');
+                const re = /^[a-zA-ZÀ-Ỹà-ỹẠ-Ỵạ-ỵĂăÂâĐđÊêÔôƠơƯư\s]+$/;
                 return re.test(name);
             }
 
@@ -86,7 +86,7 @@ const userController = {
                 return res.status(401).json({ message: 'Căn Hộ Không Hợp Lệ' });
             }
             if (!validateName(name)) {
-                return res.status(400).json({ message: 'Tên của bạn không hợp lệ!' });
+                return res.status(400).json({ message: 'Tên Không Hợp Lệ!' });
             }
 
             const phoneNumber = phone;

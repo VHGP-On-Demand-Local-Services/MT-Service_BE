@@ -6,26 +6,26 @@ const serviceController = {
             const { icon_name, name, expected_price } = req.body;
 
             function validateName(name) {
-                const re = /^[a-zA-Z ]*$/;
+                const re = /^[a-zA-ZÀ-Ỹà-ỹẠ-Ỵạ-ỵĂăÂâĐđÊêÔôƠơƯư\s]+$/;
                 return re.test(name);
             }
 
             if (!validateName(name)) {
-                return res.status(400).json({ message: 'Invalid name!' });
+                return res.status(400).json({ message: 'Tên Không Hợp Lệ!' });
             }
 
-            if (!/^\d+$/.test(expected_price)) {
-                return res.status(400).json({ message: 'Expected price can only contain numbers!' });
+            if (!/^\d{1,3}(,\d{3})*(\.\d+)?$/.test(expected_price) && !/^\d+$/.test(expected_price)) {
+                return res.status(400).json({ message: 'Tiền bạn nhập không hợp lệ!' });
             }
 
             if (!name || !icon_name || !expected_price) {
-                return res.status(400).json({ message: 'Please provide all required information!' });
+                return res.status(400).json({ message: 'Vui lòng nhập đầy đủ thông tin !' });
             }
             const existService = await Service.findOne({
                 name: req.body.name
             });
             if (existService) {
-                return res.status(400).json({ message: 'Service alredy Existing !' })
+                return res.status(400).json({ message: 'Dịch Vụ này đã tồn tại !' })
             }
             const newService = new Service({
                 icon_name: icon_name,
@@ -36,7 +36,8 @@ const serviceController = {
             const service = await newService.save();
             res.status(200).json(service);
         } catch (err) {
-            res.status(500).json({ message: 'Server Error!' });
+            console.log(err)
+            res.status(500).json({ message: 'Lỗi Hệ Thống' });
         }
     },
     getAllService: async(req, res) => {
@@ -70,7 +71,7 @@ const serviceController = {
             })
         } catch (err) {
             console.log(err)
-            res.status(500).json({ message: 'Server Error !' })
+            res.status(500).json({ message: 'Lỗi Hệ Thống' });
         }
     },
     getServicebyId: async(req, res) => {
@@ -79,10 +80,10 @@ const serviceController = {
             if (service) {
                 return res.status(200).json(service)
             } else {
-                return res.status(400).json({ message: 'Service does not Exist !' })
+                return res.status(400).json({ message: 'Dịch Vụ Không Tồn Tại !' })
             }
         } catch (err) {
-            res.status(500).json({ message: 'Server Error !' })
+            res.status(500).json({ message: 'Lỗi Hệ Thống' });
         }
     },
     updateService: async(req, res) => {
@@ -90,25 +91,25 @@ const serviceController = {
             const { icon_name, name, expected_price } = req.body
 
             function validateName(name) {
-                const re = /^[a-zA-Z ]*$/;
+                const re = /^[a-zA-ZÀ-Ỹà-ỹẠ-Ỵạ-ỵĂăÂâĐđÊêÔôƠơƯư\s]+$/;
                 return re.test(name);
             }
 
             if (!validateName(name)) {
-                return res.status(400).json({ message: 'Invalid name!' });
+                return res.status(400).json({ message: 'Tên Dịch Vụ Không Hợp Lệ!' });
             }
-            if (!/^\d+$/.test(expected_price)) {
-                return res.status(400).json({ message: 'Expected price can only contain numbers!' });
+            if (!/^\d{1,3}(,\d{3})*(\.\d+)?$/.test(expected_price) && !/^\d+$/.test(expected_price)) {
+                return res.status(400).json({ message: 'Tiền bạn nhập không hợp lệ!' });
             }
 
             if (!name || !icon_name || !expected_price) {
-                return res.status(400).json({ message: 'Please provide all required information!' });
+                return res.status(400).json({ message: 'Vui lòng nhập đầy đủ thông tin !' });
             }
             const existService = await Service.findOne({
                 name: req.body.name
             });
             if (existService && existService._id.toString() !== req.params.id) {
-                return res.status(400).json({ message: 'Service alredy Existing !' })
+                return res.status(400).json({ message: 'Dịch Vụ Đã Tồn Tại !' })
             }
 
             const updateService = await Service.findByIdAndUpdate(req.params.id, {
@@ -120,22 +121,22 @@ const serviceController = {
                 const updateService = await Service.findById(req.params.id);
                 return res.status(200).json(updateService);
             } else {
-                return res.status(401).json({ message: 'User does not exist!' });
+                return res.status(401).json({ message: 'Dịch Vụ Không Tồn Tại !' });
             }
         } catch (err) {
-            res.status(500).json({ message: 'Server Error !' })
+            res.status(500).json({ message: 'Lỗi Hệ Thống !' });
         }
     },
     deleteService: async(req, res) => {
         try {
             const service = await Service.findByIdAndDelete(req.params.id)
             if (service) {
-                return res.status(200).json({ message: 'Delete Successfully !' })
+                return res.status(200).json({ message: 'Xóa Dịch Vụ Thành Công !' })
             } else {
-                return res.status(401).json({ message: 'Service does not exists !' })
+                return res.status(401).json({ message: 'Dịch Vụ Không Tồn Tại !' });
             }
         } catch (err) {
-            res.status(500).json({ message: 'Server Error !' })
+            res.status(500).json({ message: 'Lỗi Hệ Thống' });
         }
     }
 };

@@ -12,13 +12,13 @@ const authController = {
             const hashed = await bcrypt.hash(req.body.password, salt);
             // Check validate
             function validateName(name) {
-                const re = XRegExp('[\\p{L} ]*');
+                const re = /^[a-zA-ZÀ-Ỹà-ỹẠ-Ỵạ-ỵĂăÂâĐđÊêÔôƠơƯư\s]+$/;
                 return re.test(name);
             }
 
             const name = req.body.name;
             if (!validateName(name)) {
-                return res.status(400).json({ message: 'Tên của bạn không hợp lệ!' });
+                return res.status(400).json({ message: 'Tên Không Hợp Lệ!' });
             }
 
             const phoneNumber = req.body.phone;
