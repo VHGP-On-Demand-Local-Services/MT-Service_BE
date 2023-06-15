@@ -123,7 +123,9 @@ const userController = {
         try {
             const { oldPassword, newPassword, confirmPassword } = req.body;
             const userId = req.params.id;
-
+            if (!oldPassword || !newPassword || !confirmPassword) {
+                return res.status(400).json({ message: 'Hãy nhập đủ thông tin các trường bắt buộc !' });
+            }
             const user = await User.findById(userId);
 
             if (!user) {
