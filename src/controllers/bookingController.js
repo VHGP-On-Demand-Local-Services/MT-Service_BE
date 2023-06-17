@@ -37,6 +37,29 @@ const bookingController = {
             console.log(err)
             res.status(500).json('Server Error!');
         }
+    },
+    getAllBooking: async(req, res) => {
+        try {
+            const bookingList = await BookingService.find().populate({
+                path: 'user',
+                select: 'name phone apartment'
+            }).populate({
+                path: 'booking_item',
+                select: 'status_duff',
+                populate: {
+                    path: 'service',
+                    select: 'name'
+                }
+            }).sort({ dateBooking: -1 });
+            if (bookingList.length === 0) {
+                return res.status(400).json({ message: 'Booking Not Found' })
+            } else {
+                return res.status(200).json(bookingList)
+            }
+        } catch (err) {
+            res.status(500).json({ message: err.message });
+
+        }
     }
 };
 module.exports = bookingController;
