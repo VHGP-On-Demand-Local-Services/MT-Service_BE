@@ -5,5 +5,5 @@ const router = require('express').Router()
 router.post('/create-booking', middlewareController.verifyToken, bookingController.createBooking);
 router.get('/', middlewareController.verifyTokenAdminFunction, bookingController.getAllBooking);
 router.get('/:id', middlewareController.verifyTokenisAdminandUser, bookingController.getBookingById);
-
+router.get('/userBooking/:userId', middlewareController.verifyTokenisAdminandUser, bookingController.getBookingUserId)
 module.exports = router

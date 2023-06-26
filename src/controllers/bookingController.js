@@ -100,11 +100,27 @@ const bookingController = {
             res.status(500).json({ message: err.message });
         }
     },
-
-
-
     getBookingUserId: async(req, res) => {
+        try {
+            const userBooking = await BookingService.find({
+                user: req.params.userId
+            }).populate({
+                path: 'booking_item',
+                populate: {
+                    path: 'service',
+                    populate: 'name expected_price'
+                }
+            }).sort({ dateBooking: -1 });
 
+            if (!userBooking) {
+                return res.status(404).json({ message: 'Booking not found!' });
+            }
+            res.status(200).json(userBooking);
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
     }
+
+
 };
 module.exports = bookingController;
