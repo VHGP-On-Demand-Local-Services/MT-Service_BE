@@ -11,15 +11,25 @@ const bookingController = {
                     status_duff: bookingItem.status_duff,
                 });
                 newBookingItem = await newBookingItem.save();
-                return newBookingItem._id
+                return newBookingItem._id;
             }));
+
             const bookingItemsIdsResolved = await bookingItemsIds;
+
             const totalPrices = await Promise.all(bookingItemsIdsResolved.map(async(bookingItemId) => {
                 const bookingItem = await BookingItem.findById(bookingItemId).populate('service', 'expected_price');
                 const totalPrice = bookingItem.service.expected_price * bookingItem.quantity;
                 return totalPrice;
             }));
+
             const totalPrice = totalPrices.reduce((a, b) => a + b, 0);
+
+            const dateBooking = new Date(req.body.dateBooking);
+            const currentDate = new Date();
+
+            if (dateBooking <= currentDate) {
+                return res.status(400).json({ message: 'Ngày nhận đặt phải lớn hơn ngày hiện tại.' });
+            }
 
             let booking = new BookingService({
                 booking_item: bookingItemsIdsResolved,
@@ -28,16 +38,20 @@ const bookingController = {
                 dateBooking: req.body.dateBooking,
                 status: req.body.status
             });
+
             booking = await booking.save();
+
             if (!booking) {
-                return res.status(401).json({ message: 'Cannot Booking Service! Please try again!' });
+                return res.status(401).json({ message: 'Không thể đặt dịch vụ! Vui lòng thử lại.' });
             }
+
             res.status(200).json(booking);
         } catch (err) {
-            console.log(err)
-            res.status(500).json('Server Error!');
+            console.log(err);
+            res.status(500).json('Lỗi máy chủ!');
         }
     },
+
     getAllBooking: async(req, res) => {
         try {
             const bookingList = await BookingService.find().populate({
@@ -60,6 +74,7 @@ const bookingController = {
             res.status(500).json({ message: err.message });
 
         }
-    }
+    },
+
 };
 module.exports = bookingController;
