@@ -119,6 +119,31 @@ const bookingController = {
         } catch (error) {
             res.status(500).json({ message: error.message });
         }
+    },
+    updateBookingStatus: async(req, res) => {
+        try {
+            const booking = await BookingService.findByIdAndUpdate(
+                req.params.id, {
+                    status: req.body.status
+                }, { new: true }
+            )
+            if (booking) {
+                const bookingUpdateStatus = await BookingService.findById(req.params.id)
+                    .populate({
+                        path: 'booking_item',
+                        populate: {
+                            path: 'service',
+                            select: 'name expected_price'
+                        },
+                    })
+                    .populate('user', 'name phone apartment');
+                return res.status(200).json(bookingUpdateStatus)
+            } else {
+                return res.status(401).json({ message: 'Đơn Hàng không thể cập nhật!' })
+            }
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
     }
 
 
