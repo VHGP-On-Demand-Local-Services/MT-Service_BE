@@ -7,4 +7,5 @@ router.get('/', middlewareController.verifyTokenAdminFunction, bookingController
 router.get('/:id', middlewareController.verifyTokenisAdminandUser, bookingController.getBookingById);
 router.get('/userBooking/:userId', middlewareController.verifyTokenisAdminandUser, bookingController.getBookingUserId);
 router.put('/update/:id', middlewareController.verifyTokenAdminFunction, bookingController.updateBookingStatus)
+router.delete('/delete/:id', middlewareController.verifyTokenUser, bookingController.deleteBooking)
 module.exports = router

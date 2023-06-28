@@ -40,5 +40,6 @@ The following API endpoints are available in the project:
 - `GET /api/v1/booking/:id`: Retrieves a specific booking by ID. (Requires admin or user privileges)
 - `GET /api/v1/booking/userBooking/:userId`: Retrieves bookings for a specific user. (Requires admin or user privileges)
 - `PUT /api/v1/booking/update/:id`: Updates the status of a booking. (Requires admin privileges)
+- `DELETE /api/v1/booking/delete/:id`: Delete Booking by User
 
-Please refer to the source code for more details on authentication requirements and implementation.
+  Please refer to the source code for more details on authentication requirements and implementation.
