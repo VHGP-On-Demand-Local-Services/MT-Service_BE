@@ -112,8 +112,8 @@ const bookingController = {
                 }
             }).sort({ dateBooking: -1 });
 
-            if (!userBooking) {
-                return res.status(404).json({ message: 'Booking not found!' });
+            if (userBooking.length === 0) {
+                return res.status(404).json({ message: 'Không có lịch hẹn từ người dùng này!' });
             }
             res.status(200).json(userBooking);
         } catch (error) {
@@ -140,6 +140,23 @@ const bookingController = {
                 return res.status(200).json(bookingUpdateStatus)
             } else {
                 return res.status(401).json({ message: 'Đơn Hàng không thể cập nhật!' })
+            }
+        } catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    },
+    deleteBooking: async(req, res) => {
+        try {
+            const booking = await BookingService.findByIdAndRemove(req.params.id);
+            if (booking) {
+                await Promise.all(
+                    booking.booking_item.map(async(bookingItem) => {
+                        await BookingItem.findByIdAndRemove(bookingItem);
+                    })
+                );
+                return res.status(200).json({ message: 'Hủy thành công!' });
+            } else {
+                return res.status(404).json({ message: 'Đơn hàng không tồn tại' });
             }
         } catch (error) {
             res.status(500).json({ message: error.message });
