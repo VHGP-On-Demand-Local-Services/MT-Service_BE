@@ -76,14 +76,36 @@ const serviceController = {
     },
     getServicebyId: async(req, res) => {
         try {
-            const service = await Service.findById(req.params.id);
-            if (service) {
-                return res.status(200).json(service)
-            } else {
-                return res.status(400).json({ message: 'Dịch Vụ Không Tồn Tại !' })
+            const serviceId = req.params.id;
+            // Kiểm tra nếu serviceId là 'search'
+            if (serviceId === 'search') {
+                // Gọi hàm searchService từ đối tượng serviceController
+                return serviceController.searchService(req, res);
             }
+
+            const service = await Service.findById(serviceId);
+
+            if (!service) {
+                return res.status(404).json({ message: 'Dịch Vụ Không Tồn Tại!' });
+            }
+
+            res.status(200).json(service);
         } catch (err) {
-            res.status(500).json({ message: 'Lỗi Hệ Thống' });
+            console.log(err);
+            res.status(500).json({ message: 'Lỗi Hệ Thống' });
+        }
+    },
+    searchService: async(req, res) => {
+        try {
+            const keyword = req.query.keyword; // Thay đổi tại đây
+            const nameRegex = new RegExp(keyword, 'i');
+
+            const services = await Service.find({ name: nameRegex });
+
+            res.status(200).json({ services });
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: 'Lỗi Hệ Thống' });
         }
     },
     updateService: async(req, res) => {
