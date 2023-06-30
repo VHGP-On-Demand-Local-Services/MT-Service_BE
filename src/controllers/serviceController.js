@@ -22,14 +22,14 @@ const serviceController = {
                 return res.status(400).json({ message: 'Vui lòng nhập đầy đủ thông tin !' });
             }
             const existService = await Service.findOne({
-                name: req.body.name
+                name: req.body.name.trim()
             });
             if (existService) {
                 return res.status(400).json({ message: 'Dịch Vụ này đã tồn tại !' })
             }
             const newService = new Service({
-                icon_name: icon_name,
-                name: name,
+                icon_name: icon_name.trim(),
+                name: name.trim(),
                 expected_price: expected_price
             });
 
