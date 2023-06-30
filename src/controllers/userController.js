@@ -96,7 +96,9 @@ const userController = {
             if (phoneNumber.length > 11 || phoneNumber.length < 10) {
                 return res.status(400).json({ message: 'Số điện thoại không hợp lệ!! (10-11 số)' });
             }
-
+            if (!name.trim() || !apartment.trim() || !phone) {
+                return res.status(400).json({ message: 'Vui lòng nhập đủ thông tin các trường bắt buộc!' });
+            }
             const existPhone = await User.findOne({ phone: phoneNumber });
 
             if (existPhone && existPhone._id.toString() !== req.params.id) {
