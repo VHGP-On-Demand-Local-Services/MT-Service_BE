@@ -1,7 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const XRegExp = require('xregexp');
 
 let refeshTokens = [];
 
@@ -16,7 +15,7 @@ const authController = {
                 return re.test(name);
             }
 
-            const name = req.body.name;
+            const name = req.body.name.trim();
             if (!validateName(name)) {
                 return res.status(400).json({ message: 'Tên Không Hợp Lệ!' });
             }
@@ -30,7 +29,7 @@ const authController = {
             }
             // Check empty
             const apartment = req.body.apartment
-            if (!name || !phoneNumber || !req.body.password || !apartment) {
+            if (!name.trim() || !phoneNumber || !req.body.password.trim() || !apartment.trim()) {
                 return res.status(400).json({ message: 'Hãy nhập đủ thông tin các trường bắt buộc !' });
             }
 
@@ -41,10 +40,10 @@ const authController = {
             }
 
             const newUser = new User({
-                name: name,
+                name: name.trim(),
                 phone: phoneNumber,
                 password: hashed,
-                apartment: apartment,
+                apartment: apartment.trim(),
             });
             const user = await newUser.save();
             res.status(200).json(user);
