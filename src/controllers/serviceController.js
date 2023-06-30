@@ -18,7 +18,7 @@ const serviceController = {
                 return res.status(400).json({ message: 'Tiền bạn nhập không hợp lệ!' });
             }
 
-            if (!name || !icon_name || !expected_price) {
+            if (!name.trim() || !icon_name.trim() || !expected_price) {
                 return res.status(400).json({ message: 'Vui lòng nhập đầy đủ thông tin !' });
             }
             const existService = await Service.findOne({
