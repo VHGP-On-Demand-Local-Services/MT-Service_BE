@@ -124,19 +124,19 @@ const serviceController = {
                 return res.status(400).json({ message: 'Tiền bạn nhập không hợp lệ!' });
             }
 
-            if (!name || !icon_name || !expected_price) {
+            if (!name.trim() || !icon_name.trim() || !expected_price) {
                 return res.status(400).json({ message: 'Vui lòng nhập đầy đủ thông tin !' });
             }
             const existService = await Service.findOne({
-                name: req.body.name
+                name: req.body.name.trim()
             });
             if (existService && existService._id.toString() !== req.params.id) {
                 return res.status(400).json({ message: 'Dịch Vụ Đã Tồn Tại !' })
             }
 
             const updateService = await Service.findByIdAndUpdate(req.params.id, {
-                icon_name: icon_name,
-                name: name,
+                icon_name: icon_name.trim(),
+                name: name.trim(),
                 expected_price: expected_price
             })
             if (updateService) {
