@@ -103,9 +103,9 @@ const userController = {
                 return res.status(400).json({ message: 'Số Điện Thoại đã tồn tại !', existingPhone: existPhone.phone });
             }
             const updateUser = await User.findByIdAndUpdate(req.params.id, {
-                name: name,
+                name: name.trim(),
                 phone: phoneNumber,
-                apartment: apartment,
+                apartment: apartment.trim(),
             });
 
             if (updateUser) {

@@ -14,10 +14,9 @@ const authController = {
                 const re = /^[a-zA-ZÀ-Ỹà-ỹẠ-Ỵạ-ỵĂăÂâĐđÊêÔôƠơƯư\s]+$/;
                 return re.test(name);
             }
-
             const name = req.body.name.trim();
             if (!validateName(name)) {
-                return res.status(400).json({ message: 'Tên Không Hợp Lệ!' });
+                return res.status(400).json({ message: 'Tên Chủ Căn Hộ Không Hợp Lệ!' });
             }
 
             const phoneNumber = req.body.phone;
@@ -28,11 +27,18 @@ const authController = {
                 return res.status(400).json({ message: 'Số điện thoại không hợp lệ!! (10-11 số)' });
             }
             // Check empty
-            const apartment = req.body.apartment
+            const apartment = req.body.apartment.trim()
             if (!name.trim() || !phoneNumber || !req.body.password.trim() || !apartment.trim()) {
-                return res.status(400).json({ message: 'Hãy nhập đủ thông tin các trường bắt buộc !' });
+                return res.status(400).json({ message: 'Hãy nhập đủ thông tin  !' });
             }
 
+            function validateApartment(apartment) {
+                const re = /^[a-zA-Z0-9-]*$/;
+                return re.test(apartment);
+            }
+            if (!validateApartment(apartment)) {
+                return res.status(401).json({ message: 'Căn Hộ Không Hợp Lệ' });
+            }
             // Check Existing User
             const existingUser = await User.findOne({ phone: req.body.phone });
             if (existingUser) {
