@@ -103,6 +103,9 @@ const serviceController = {
 
             const services = await Service.find({ name: nameRegex });
 
+            if (services.length === 0) {
+                return res.status(200).json({ message: 'Không có kết quả tìm kiếm' });
+            }
             res.status(200).json({ services });
         } catch (error) {
             console.log(error);
