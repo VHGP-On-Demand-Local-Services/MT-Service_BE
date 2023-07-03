@@ -102,28 +102,22 @@ const bookingController = {
     },
     getBookingUserId: async(req, res) => {
         try {
-            const userId = req.params.userId;
-
-            // Kiểm tra nếu người dùng là admin hoặc là người dùng hiện tại
-            if (req.user.admin || req.user.id === userId) {
-                const userBooking = await BookingService.find({ user: userId }).populate({
-                    path: 'booking_item',
-                    populate: {
-                        path: 'service',
-                        populate: 'name expected_price'
-                    }
-                }).sort({ dateBooking: -1 });
-
-                if (userBooking.length === 0) {
-                    return res.status(404).json({ message: 'Không có lịch hẹn từ người dùng này!' });
+            const userBooking = await BookingService.find({
+                user: req.params.userId
+            }).populate({
+                path: 'booking_item',
+                populate: {
+                    path: 'service',
+                    populate: 'name expected_price'
                 }
+            }).sort({ dateBooking: -1 });
 
-                return res.status(200).json(userBooking);
-            } else {
-                return res.status(403).json({ message: 'Bạn không thể xem thông tin đặt chỗ của người dùng này!' });
+            if (userBooking.length === 0) {
+                return res.status(404).json({ message: 'Không có lịch hẹn từ người dùng này!' });
             }
+            res.status(200).json(userBooking);
         } catch (error) {
-            return res.status(500).json({ message: error.message });
+            res.status(500).json({ message: error.message });
         }
     },
     updateBookingStatus: async(req, res) => {
