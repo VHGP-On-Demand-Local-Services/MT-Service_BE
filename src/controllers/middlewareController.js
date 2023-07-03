@@ -18,7 +18,7 @@ const middlewareController = {
     },
     verifyTokenUser: (req, res, next) => {
         middlewareController.verifyToken(req, res, () => {
-            if (req.user._id === req.params._id) {
+            if (req.user.id === req.params.id) {
                 next();
             } else {
                 res.status(403).json({ message: 'Bạn Không Thể Thực Hiện Chức Năng Này !' })
@@ -36,12 +36,12 @@ const middlewareController = {
     },
     verifyTokenisAdminandUser: (req, res, next) => {
         middlewareController.verifyToken(req, res, () => {
-            if (req.user._id === req.params._id || req.user.admin) {
+            if (req.user.id === req.params.userId || req.user.admin) {
                 next();
             } else {
-                res.status(403).json({ message: 'Bạn Không Thể Thực Hiện Chức Năng Này !' })
+                res.status(403).json({ message: 'Bạn không thể thực hiện chức năng này!' });
             }
-        })
-    },
+        });
+    }
 };
 module.exports = middlewareController;
