@@ -31,12 +31,24 @@ const bookingController = {
                 return res.status(400).json({ message: 'Ngày nhận đặt phải lớn hơn ngày hiện tại.' });
             }
 
+            const existingBookings = await BookingService.find({
+                user: req.body.user,
+                dateBooking: {
+                    $gte: new Date(dateBooking.getTime() - 30 * 60 * 1000), // Giảm 30 phút từ ngày đặt
+                    $lt: new Date(dateBooking.getTime() + 30 * 60 * 1000), // Tăng 30 phút từ ngày đặt
+                },
+            });
+
+            if (existingBookings.length > 0) {
+                return res.status(400).json({ message: 'Bạn đã đặt một dịch vụ khác trong khoảng thời gian này.' });
+            }
+
             let booking = new BookingService({
                 booking_item: bookingItemsIdsResolved,
                 user: req.body.user,
                 totalPrice: totalPrice,
                 dateBooking: req.body.dateBooking,
-                status: req.body.status
+                status: req.body.status,
             });
 
             booking = await booking.save();
